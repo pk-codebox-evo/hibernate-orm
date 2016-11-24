@@ -14,6 +14,7 @@ import java.util.Locale;
 import javax.persistence.Access;
 import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.NamedEntityGraph;
@@ -174,7 +175,6 @@ public class EntityBinder {
 		if ( persistentClass == null ) {
 			return false;
 		}
-
 		return persistentClass.isPropertyDefinedInSuperHierarchy( name );
 	}
 

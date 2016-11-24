@@ -17,10 +17,6 @@ buildDir = "target"
 idea.module {
 }
 
-
-final String[] versionComponents = version.split( '\\.' );
-final String majorMinorVersion = versionComponents[0] + '.' + versionComponents[1];
-
 final File documentationDir = mkdir( "${project.buildDir}/documentation" );
 
 /**
@@ -38,8 +34,8 @@ task assembleDocumentation(type: Task, dependsOn: [rootProject.project( 'documen
 
         // Integrations Guide
         copy {
-            from "${rootProject.project( 'documentation' ).buildDir}/docbook/publish/integrationsGuide/en-US"
-            into "${documentationDir}/integrationsGuide"
+            from "${rootProject.project( 'documentation' ).buildDir}/asciidoc/integrationguide"
+            into "${documentationDir}/integrationguide"
         }
 
         // Getting-started Guide
@@ -74,7 +70,7 @@ task assembleDocumentation(type: Task, dependsOn: [rootProject.project( 'documen
 task uploadDocumentation(type:Exec, dependsOn: assembleDocumentation) {
     description = "Uploads documentation to the JBoss doc server"
 
-    final String url = "filemgmt.jboss.org:/docs_htdocs/hibernate/orm/${majorMinorVersion}";
+    final String url = "filemgmt.jboss.org:/docs_htdocs/hibernate/orm/${rootProject.hibernateMajorMinorVersion}";
 
     executable 'rsync'
     args '-avz', '--links', '--protocol=28', "${documentationDir.absolutePath}/", url
@@ -117,6 +113,15 @@ distributions {
 //            into( 'lib/jpa' ) {
 //                from parent.project( 'hibernate-entitymanager' ).configurations.archives.allArtifacts.files.filter{ file -> !file.name.endsWith('-sources.jar') }
 //            }
+
+            into( 'lib/spatial' ) {
+                from(
+                        ( parent.project( 'hibernate-spatial' ).configurations.archives.allArtifacts.files.filter{ file -> !file.name.endsWith('-sources.jar') }
+                                + parent.project( 'hibernate-spatial' ).configurations.runtime )
+                                - parent.project( 'hibernate-core' ).configurations.runtime
+                                - parent.project( 'hibernate-core' ).configurations.archives.allArtifacts.files
+                )
+            }
 
             into( 'lib/jpa-metamodel-generator' ) {
                 from parent.project( 'hibernate-jpamodelgen' ).configurations.archives.allArtifacts.files.filter{ file -> !file.name.endsWith('-sources.jar') }

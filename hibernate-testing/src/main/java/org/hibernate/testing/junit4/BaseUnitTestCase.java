@@ -47,7 +47,6 @@ public abstract class BaseUnitTestCase {
 	@AfterClassOnce
 	public void assertNoLeaks() {
 		if ( enableConnectionLeakDetection ) {
-			log.info( "Assert no leaks!" );
 			connectionLeakUtil.assertNoLeaks();
 		}
 	}
@@ -61,6 +60,15 @@ public abstract class BaseUnitTestCase {
 			}
 			catch (SystemException ignored) {
 			}
+		}
+	}
+
+	protected void sleep(long millis) {
+		try {
+			Thread.sleep( millis );
+		}
+		catch ( InterruptedException e ) {
+			Thread.interrupted();
 		}
 	}
 }
